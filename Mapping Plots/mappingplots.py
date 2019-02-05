@@ -26,11 +26,13 @@ projMethods = {
 
 ####INPUT PARAMETERS####
 #Input the city names into this array. 
-cities = ['nanjing','beijing','tokyo','new york','toronto','sydney','madrid', 'atlanta', 'delhi', 'paris', 'seattle', 'lublin', 'cairo']
+cities = ['tokyo','moscow','shanghai','beijing','seoul','new york','new delhi','guangzhou','mexico city','hong kong']
 #Input the value for each city into this array (following the order of city names).
-values = [5,1,3,7,5,3,2,8,2,1,4,6,9]
+values = [3463,2369,2044,1988,1885,1806,1789,1730,1678,1600]
 #Choose your projection method.
 projMethod = 'World Robinson'
+#Set map title
+mapTitle = '10 busiest metros in the world'
 
 ####################################################################
 
@@ -160,6 +162,7 @@ def main():
 
     gdfCrs.plot(ax=ax, alpha=0.5, linewidth = 0.5, edgecolor='black', color='#F0A14C',markersize = circleSize(values))
     #show axis? ('off'/'on')
+    ax.set_title(mapTitle)
     ax.axis('off')
     plt.show()
     print('Done!')
