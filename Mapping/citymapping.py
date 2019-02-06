@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
 ########################
+#City Mapping
 #Author: Jialei Shen
 #E-mail: jshen20@syr.edu
-#Latest: Feb 5, 2019
+#Latest: Feb 6, 2019
 ########################
 
 import pandas as pd
@@ -14,14 +15,6 @@ import csv
 from array import *
 from cartopy import crs as ccrs
 
-#Map projection options
-projMethods = {
-    'Normal':'epsg:4326',
-    'Mercator':'epsg:3395',
-    'World Robinson': 'ESRI:54030',
-    'Pseudo-Mercator': 'epsg:3857'
-    } #please add more projection options
-
 ####################################################################
 
 ####INPUT PARAMETERS####
@@ -30,7 +23,9 @@ cities = ['tokyo','moscow','shanghai','beijing','seoul','new york','new delhi','
 #Input the value for each city into this array (following the order of city names).
 values = [3463,2369,2044,1988,1885,1806,1789,1730,1678,1600]
 #Choose your projection method.
-projMethod = 'World Robinson'
+projMethod = 'World Robinson' #Normal; Mercator; World Robinson; Pseudo-Mercator;
+#Choose the mapping color
+legendColor = 'orange' #orange; red; green; black; blue; grey;
 #Set map title
 mapTitle = '10 busiest metros in the world'
 
@@ -124,11 +119,19 @@ def circleSize(vs):
 
 def main():
     print('''########################
-#Mapping Plots
+#City Mapping
 #Author: Jialei Shen
 #E-mail: jshen20@syr.edu
 #Latest: Feb 5, 2019
 ########################\nRunning...''')
+
+    
+    if len(cities) > len(values):
+        print('#############################################\nError [Range Error]: The country number is more than the value number.\n#############################################')
+    elif len(cities) < len(values):
+        print('#############################################\nError [Range Error]: The country number is less than the value number.\n#############################################')
+    
+    
     counts,lats,lngs = cityCoor(cities)
     df = pd.DataFrame(
         {'City': cities,
@@ -146,13 +149,24 @@ def main():
     print(gdfProj['City'])
     print('+++++++++++++++++++++++++\n')
     gdfCrs = gdfProj['Coordinates']
+    print(gdfCrs)
     gdfCrs.crs = {'init': 'epsg:4326', 'no_defs': True}
+
+    #Map projection options
+    projMethods = {
+        'Normal':'epsg:4326',
+        'Mercator':'epsg:3395',
+        'World Robinson': 'ESRI:54030',
+        'Pseudo-Mercator': 'epsg:3857'
+        } #please add more projection options
     
     gdfCrs = gdfCrs.to_crs({'init': projMethods[projMethod]})
+    print(gdfCrs)
     #print the coordinates after projected
     print('Mapping...')
 
     world = geopandas.read_file(geopandas.datasets.get_path('naturalearth_lowres'))
+
     world = world.to_crs({'init': projMethods[projMethod]})
 
     #inside [..], choose the countries/continents you want and/or don't want to be shown in the map
@@ -160,7 +174,16 @@ def main():
     ax = world[(world.name != "Antarctica") & (world.name != "Fr. S. Antarctic Lands")].plot(
     color='#E7EEF1', linewidth = 0.1, edgecolor='black', figsize=(10.,5.))
 
-    gdfCrs.plot(ax=ax, alpha=0.5, linewidth = 0.5, edgecolor='black', color='#F0A14C',markersize = circleSize(values))
+    legendColors = {
+        'orange':'#F0A14C',
+        'red':'#B22222',
+        'green':'#008080',
+        'black':'#000000',
+        'blue':'#1F4C91',
+        'grey':'#464646'
+        }
+
+    gdfCrs.plot(ax=ax, alpha=0.5, linewidth = 0.5, edgecolor='black', color=legendColors[legendColor],markersize = circleSize(values))
     #show axis? ('off'/'on')
     ax.set_title(mapTitle)
     ax.axis('off')
